@@ -53,26 +53,26 @@ class ResidualBlock(nn.Module):
     """
     def __init__(self, in_channels, out_channels, stride=1):
         super(ResidualBlock, self).__init__()
-        # First convolutional layer
+        # First convolutional layer - Removed bias=False
         self.conv1 = nn.Conv2d(
             in_channels, out_channels,
-            kernel_size=3, stride=stride, padding=1, bias=False # Bias often omitted with BatchNorm
+            kernel_size=3, stride=stride, padding=1
         )
         self.batch_norm1 = nn.BatchNorm2d(out_channels)
-        # Second convolutional layer
+        # Second convolutional layer - Removed bias=False
         self.conv2 = nn.Conv2d(
             out_channels, out_channels,
-            kernel_size=3, stride=1, padding=1, bias=False
+            kernel_size=3, stride=1, padding=1
         )
         self.batch_norm2 = nn.BatchNorm2d(out_channels)
 
         self.downsample = nn.Sequential()
-        # Downsample path if input/output channels or stride differ
+        # Downsample path if input/output channels or stride differ - Removed bias=False
         if stride != 1 or in_channels != out_channels:
             self.downsample = nn.Sequential(
                 nn.Conv2d(
                     in_channels, out_channels,
-                    kernel_size=1, stride=stride, bias=False
+                    kernel_size=1, stride=stride
                 ),
                 nn.BatchNorm2d(out_channels)
             )
@@ -97,8 +97,8 @@ class ResNet(nn.Module):
     """
     def __init__(self, residual_block, n_blocks_lst, n_classes):
         super(ResNet, self).__init__()
-        # Initial convolutional layer
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        # Initial convolutional layer - Removed bias=False
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3)
         self.batch_norm1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU()
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
@@ -162,7 +162,7 @@ model_1 = ResNet(
     n_blocks_lst=[2, 2, 2, 2], # Block configuration for KD Student
     n_classes=n_classes
 ).to(device)
-# CORRECTED PATH: "./kdsamedata_wt.pt" instead of "./model/kdsamedata_wt.pt"
+# Model path is already updated to reflect root directory in previous iteration
 model_1.load_state_dict(torch.load(
     "./kdsamedata_wt.pt", map_location=device)) # Load pre-trained weights
 model_1.eval() # Set model to evaluation mode (disables dropout, batchnorm updates)
@@ -173,7 +173,7 @@ model_2 = ResNet(
     n_blocks_lst=[3, 4, 6, 3], # Block configuration for Teacher model
     n_classes=n_classes
 ).to(device)
-# CORRECTED PATH: "./teacher_wt.pt" instead of "./model/teacher_wt.pt"
+# Model path is already updated to reflect root directory in previous iteration
 model_2.load_state_dict(torch.load(
     "./teacher_wt.pt", map_location=device)) # Load pre-trained weights
 model_2.eval() # Set model to evaluation mode
